@@ -42,8 +42,12 @@ if __name__ == '__main__':
 	db_dir = args.db_dir
 	result_dir = args.result_dir
 	soft_mkdir(result_dir)
-	start_id = args.start_index
+	start_id = int(args.start_index)
 	last_id = args.last_index
+	if last_id == 'None' or last_id is None:
+		last_id = None
+	else:
+		last_id = int(last_id)
 	files = sorted(os.listdir(dirname))[start_id:last_id]
 	for filename in files:
 		command = 'hmmscan --tblout {0}/{2}.rep {1}/bdb {3}/{2}'.format(result_dir, db_dir, filename, dirname)
