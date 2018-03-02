@@ -19,6 +19,16 @@ parser.add_argument(
 	help='dir where will be saved .rep files (default: reps)',
 	default='reps')
 
+parser.add_argument(
+	'--start_index', 
+	help='start file id if files sorted by names (default: 0)',
+	default=0)
+
+parser.add_argument(
+	'--last_index', 
+	help='last file id if flies sorted by names (default: None)',
+	default=None)
+
 def soft_mkdir(dirname):
     try:
         os.mkdir(dirname)
@@ -32,7 +42,9 @@ if __name__ == '__main__':
 	db_dir = args.db_dir
 	result_dir = args.result_dir
 	soft_mkdir(result_dir)
-	files = sorted(os.listdir(dirname))
+	start_id = args.start_index
+	last_id = args.last_index
+	files = sorted(os.listdir(dirname))[start_id:last_id]
 	for filename in files:
 		command = 'hmmscan --tblout {0}/{2}.rep {1}/bdb {3}/{2}'.format(result_dir, db_dir, filename, dirname)
 		print(command)
