@@ -49,5 +49,5 @@ if __name__ == '__main__':
             grouped[grouped['e_value'] > 1e-5] = None
             names = parse_enzymes_names('{}/{}'.format(source_fasta, fasta_name))
             names.join(grouped, on=0)
-            sequence = names[0].values
+            sequence = names['target_name'].values
             np.save('{}/{}'.format(numpy_dir, filename), sequence)
