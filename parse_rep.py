@@ -10,6 +10,19 @@ def parse_line(line):
     return splitted
 
 
+def parse_enzymes_names(file_path):
+    f = open(file_path)
+    lines = f.readlines()
+    enzymes = []
+    enzyme_id = -1
+    for line in lines:
+        if line[0] == '>':
+            enzymes.append(line[1:].split(' ', 1)[0])
+            enzyme_id += 1
+    f.close()
+    return pd.DataFrame(enzymes)
+
+
 def soft_mkdir(dirname):
     try:
         os.mkdir(dirname)
@@ -19,7 +32,8 @@ def soft_mkdir(dirname):
 
 if __name__ == '__main__':
     dirname = sys.argv[1]
-    numpy_dir = 'numpy_dir'
+    source_fasta = sys.argv[2]
+    numpy_dir = sys.argv[3]
     soft_mkdir(numpy_dir)
     filenames = [filename for filename in sorted(os.listdir(dirname)) if filename.endswith('.rep')]
     for filename in filenames:
@@ -30,5 +44,7 @@ if __name__ == '__main__':
             dataframe['e_value'] = dataframe.e_value.astype(float)
             grouped = dataframe.groupby('query_name').first()
             grouped[grouped['e_value'] > 1e-5] = None
-            sequence = grouped['target_name'].values
+            names = parse_enzymes_names('{}/{}'.format(source_fasta, filename.rsplit('.', 1)[0]))
+            names.join(grouped, on=0)
+            sequence = names[0].values
             np.save('{}/{}'.format(numpy_dir, filename), sequence)
