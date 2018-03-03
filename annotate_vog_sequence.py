@@ -31,7 +31,7 @@ if __name__ == '__main__':
     existing_anno = vog_anno.groupby('short_anno', as_index=False).first()
     
     clean_dir(result_dirname)
-    filenames = [filename for filename in sorted(os.listdir(input_dirname)) if filename.endswith('.rep.npy')]
+    filenames = [filename for filename in sorted(os.listdir(input_dirname)) if filename.endswith('npy')]
     for filename in filenames:
         input_file_path = '{}/{}'.format(input_dirname, filename)
         vog_sequence = np.load(input_file_path)
@@ -44,8 +44,8 @@ if __name__ == '__main__':
             vog_seq_matrix[anno] = vog_seq_matrix.short_anno.apply(lambda cur_anno: int(cur_anno == anno))
             
         
-#        result_file_path = '{}/{}'.format(result_dirname, filename) + '.csv'
-#        vog_seq_matrix.to_csv(result_file_path, sep='\t')
+        result_file_path = '{}/{}'.format(result_dirname, filename) + '.csv'
+        vog_seq_matrix.to_csv(result_file_path, sep='\t')
         
-        result_file_path = '{}/{}'.format(result_dirname, filename) + '.xlsx'
-        vog_seq_anno.to_excel(result_file_path)
+#        result_file_path = '{}/{}'.format(result_dirname, filename) + '.xlsx'
+#        vog_seq_anno.to_excel(result_file_path)
