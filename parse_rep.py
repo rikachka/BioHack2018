@@ -35,8 +35,11 @@ if __name__ == '__main__':
     source_fasta = sys.argv[2]
     numpy_dir = sys.argv[3]
     soft_mkdir(numpy_dir)
+    fasta_names = [filename for filename in sorted(os.listdir(source_fasta))]
     filenames = [filename for filename in sorted(os.listdir(dirname)) if filename.endswith('.rep')]
-    for filename in filenames:
+    if len(fasta_names) != len(filenames):
+        raise(Exception('Different number of files .rep and .faa'))
+    for filename, fasta_name in zip(filenames, fasta_names):
         with open('{}/{}'.format(dirname, filename)) as f:
             lines = f.readlines()
             filtered = [parse_line(line) for line in lines if not line.startswith('#')]
@@ -44,7 +47,7 @@ if __name__ == '__main__':
             dataframe['e_value'] = dataframe.e_value.astype(float)
             grouped = dataframe.groupby('query_name').first()
             grouped[grouped['e_value'] > 1e-5] = None
-            names = parse_enzymes_names('{}/{}'.format(source_fasta, filename.rsplit('.', 1)[0]))
+            names = parse_enzymes_names('{}/{}'.format(source_fasta, fasta_name))
             names.join(grouped, on=0)
             sequence = names[0].values
             np.save('{}/{}'.format(numpy_dir, filename), sequence)
