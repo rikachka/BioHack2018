@@ -30,3 +30,14 @@ def get_frequency(sequences):
     return copyness
 
 
+def draw_frequency(frequency):
+    sorted_wogs = sorted([(value, key) for key, value in frequency.items()], reverse=True)
+    X = np.arange(len(sorted_wogs))
+    y = []
+    index = 0
+    current = 0
+    for value, key in sorted_wogs:
+        y.append(current)
+        current += value
+    plt.plot(X, y)
+    return X, np.array(y)
