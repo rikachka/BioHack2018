@@ -21,9 +21,10 @@ if __name__ == '__main__':
     input_dirname = sys.argv[1]
     result_dirname = sys.argv[2]
     
-    vog_anno = pd.read_table('VOG_with_short_anno.txt', sep='\t')
-    vog_anno = vog_anno.filter(items=['VOG.number', 'Short.Annotations'])
-    vog_anno = vog_anno.rename(index=str, columns={"VOG.number": "vog_number", "Short.Annotations": "short_anno"})
+#    vog_anno = pd.read_table('VOG_with_short_anno.txt', sep='\t')
+    vog_anno = pd.read_table('vogs_with_anno_and_vq.txt', sep='\t')
+    vog_anno = vog_anno.filter(items=['VOG.number', 'Short.Annotations', 'Viral Quotient'])
+    vog_anno = vog_anno.rename(index=str, columns={'VOG.number': 'vog_number', 'Short.Annotations': 'short_anno', 'Viral Quotient': 'viral_quotient'})
     vog_anno = vog_anno.dropna()
     vog_anno = vog_anno.set_index('vog_number')
     
@@ -42,5 +43,9 @@ if __name__ == '__main__':
             vog_seq_matrix[anno] = vog_seq_matrix.short_anno.apply(lambda cur_anno: int(cur_anno == anno))
             vog_seq_matrix[anno] = vog_seq_matrix.short_anno.apply(lambda cur_anno: int(cur_anno == anno))
             
-        result_file_path = '{}/{}'.format(result_dirname, filename) + '.csv'
-        vog_seq_matrix.to_csv(result_file_path, sep='\t')
+        
+#        result_file_path = '{}/{}'.format(result_dirname, filename) + '.csv'
+#        vog_seq_matrix.to_csv(result_file_path, sep='\t')
+        
+        result_file_path = '{}/{}'.format(result_dirname, filename) + '.xlsx'
+        vog_seq_anno.to_excel(result_file_path)
