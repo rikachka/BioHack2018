@@ -50,4 +50,5 @@ if __name__ == '__main__':
             names = parse_enzymes_names('{}/{}'.format(source_fasta, fasta_name))
             names = names.join(grouped, on=0)
             sequence = names['target_name'].values
+            sequence[sequence.astype(str) == 'nan'] = None
             np.save('{}/{}'.format(numpy_dir, filename), sequence)
