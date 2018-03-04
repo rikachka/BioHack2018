@@ -5,8 +5,8 @@ import numpy as np
 
 
 def parse_line(line):
-    splitted = line.split(' ')
-    splitted = [value for value in splitted if value != '' and value != '-'][:3]
+    splitted = line.split()
+    splitted = [value for value in splitted if value != '-'][:3]
     return splitted
 
 
@@ -17,7 +17,7 @@ def parse_enzymes_names(file_path):
     enzyme_id = -1
     for line in lines:
         if line[0] == '>':
-            enzymes.append(line[1:].split(' ', 1)[0])
+            enzymes.append(line[1:].split()[0])
             enzyme_id += 1
     f.close()
     return pd.DataFrame(enzymes)
