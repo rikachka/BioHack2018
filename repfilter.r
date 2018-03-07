@@ -41,11 +41,10 @@ for (i in proteins_sequence){
     filtered_data <- rbind(filtered_data, x[1,]) # x[1,] потому что бывают и одинаковые E-value)
   }
   # если же с E-value и VQ все хорошо, то
-  #   если хотя бы в одно значение в столбце коротких аннотаций не пустое, 
+  #   если хотя бы в одно значение в столбце коротких аннотаций не пустое,
   #     то берет из отобранных по наличию аннотаций VOGов тот, у которого меньше E-value
-  #   если аннотаций ни у кого нет, то просто берет VOG с наименьшим E-value 
+  #   если аннотаций ни у кого нет, то просто берет VOG с наименьшим E-value
   else {
-    # если у белка нет короткой аннотации
     if (any(is.na(x$Short.Annotations)==F)) {
       x <- x[x$`E-value`==min(x[is.na(x$Short.Annotations)==F,]$'E-value'),]
       x[,1] <- x[,4]
@@ -59,7 +58,7 @@ for (i in proteins_sequence){
   }
 }
 
-# outer join таблицы с названиями белков и таблицы из предыдущей функции 
+# outer join таблицы с названиями белков и таблицы из предыдущей функции
 filtered_data <- merge(protein_names, filtered_data, by='query name', all=T)
 filtered_data$`target name` <- as.character(filtered_data$`target name`)
 filtered_data[is.na(filtered_data$`target name`)==T,]$'target name' <- "bacterial_protein" # заполняет все образовавшиеся NA осмысленным названием
