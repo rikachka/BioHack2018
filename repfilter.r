@@ -28,32 +28,32 @@ colnames(rep) <- c("target name",  "query name", "E-value")
 
 # делает left join. к строкам таблицы rep добавляется информация про VOGи (если они есть)
 rep_w_anno <- merge(rep, vogs_with_anno_and_vq, by.x = "target name", by.y = "VOG.number", all.x=T)[,c(1,2,3,11,14)]
+rep_w_anno <- rep_w_anno[!(is.na(rep_w_anno$Viral.Quotient)==T),] # убирает все строки с отсутствующим VQ, т.к. они были отсеяны по этому признаку
 
-proteins_sequence <- unique(rep$`query name`) # создает последовательность из белков, у которых есть VOGи
+proteins_sequence <- unique(rep_w_anno$`query name`) # создает последовательность из белков, у которых есть VOGи
 filtered_data <- rep_w_anno[0,] # сюда пойдет выход функции
 # берет лучшие VOGи, т.к. с белками обычно совпадает несколько. отсеивает по E-value
 for (i in proteins_sequence){
   x <- rep_w_anno[rep_w_anno$`query name`== i,] # в каждой итерации проверяется выборка строк про один и тот же белок
-  # если E-value > 10^3 или у всех отсутствует VQ (мало ли), берет VOG с наименьшим E-value и заменяет название VOGа на "bacterial protein"
-  if ((all(x$'E-value'>1e-3)) | (all(is.na(x$Viral.Quotient)==T))) {
-    x <- x[x$'E-value'==min(x$`E-value`),]
-    x[,1] <- "bacterial_protein"
-    filtered_data <- rbind(filtered_data, x[1,]) # x[1,] потому что бывают и одинаковые E-value)
+  # если E-value > 10^3, не добавляет его в таблицу выдачи
+  if (all(x$'E-value'>1e-3) == T) {
+    next # теперь мы тут просто ничего не делаем, а NA все равно позже заменяется на bacterial_protein
   }
   # если же с E-value и VQ все хорошо, то
-  #   если хотя бы в одно значение в столбце коротких аннотаций не пустое,
+  #   если хотя бы в одно значение в столбце коротких аннотаций не пустое, 
   #     то берет из отобранных по наличию аннотаций VOGов тот, у которого меньше E-value
-  #   если аннотаций ни у кого нет, то просто берет VOG с наименьшим E-value
+  #   если аннотаций ни у кого нет, то просто берет VOG с наименьшим E-value 
   else {
+    # если у белка нет короткой аннотации
     if (any(is.na(x$Short.Annotations)==F)) {
       x <- x[x$`E-value`==min(x[is.na(x$Short.Annotations)==F,]$'E-value'),]
       x[,1] <- x[,4]
       filtered_data <- rbind(filtered_data, x[1,])
     }
     else {
-        x <- x[x$'E-value'==min(x$`E-value`),]
-        x[,1] <- "VOG"
-        filtered_data <- rbind(filtered_data, x[1,])
+      x <- x[x$'E-value'==min(x$`E-value`),][1,]
+      x[,1] <- "VOG"
+      filtered_data <- rbind(filtered_data, x)
     }
   }
 }
